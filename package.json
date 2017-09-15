@@ -1,0 +1,18 @@
+{
+  "name": "tmp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "rxjs": "^5.4.3",
+    "websocket": "^1.0.24"
+  },
+  "devDependencies": {
+    "present": "^1.0.0"
+  }
+}
