@@ -7,7 +7,7 @@ var count = 0;
 
 let wsurl = 'ws://localhost:8080/'
 
-
+var newCon, closeCon;
 var openObserver = {
   next: (msg) => {
     console.log(`% openObserver msg: ${msg}`)
@@ -41,11 +41,14 @@ var closeObserver = {
   complete: () => { console.log('@ closed complete !') }
 };
 
-var newCon, closeCon;
 var connectionObserver;
 
+/* var status = new Rx.Observable(
+  (observer) => { connnectionObserver = observer})
+  .publishBehavior(0).refCount(); */
+
 var status = new Rx.Observable(
-  (observer) => { connnectionObserver = observer}).share();
+  (observer) => { connnectionObserver = observer }).share();
 
 const wsConf = {
   url: wsurl,
@@ -53,7 +56,7 @@ const wsConf = {
   closeObserver: {
     next: (e) => {
       console.log('Closed!');
-      connnectionObserver.next('closed')
+      connnectionObserver.next('closed');
     }
   },
   openObserver: {
@@ -114,6 +117,7 @@ function reconnection() {
 function closeWebSocket() {
   if (socket) {
     socket.unsubscribe();
+    socket = null;
     console.log('#### unsubscribe #####')
   }
   //   closeCon = connectStatus.takeWhile(
@@ -154,10 +158,20 @@ function MyConnectWS () {
       console.log('newCon unsubscribe')
       newCon.unsubscribe();
     }
-    newCon = status.take(1).subscribe(openObserver)
+    newCon = status.subscribe(openObserver)
   }
 }
 
+function MyCloseWS() {
+  console.log('In MyCloseWS way.')
+  if (socket) {
+    if (closeCon) {
+      console.log('closeCon unsubscribe')
+    } else {
+      closeCon = status.take(1).subscribe(closeObserver);
+    }
+  }
+}
 status.subscribe(
   (m) => { console.log(' >> status: ' + m)},
   (error) => {console.log(error)},
@@ -165,17 +179,23 @@ status.subscribe(
 );
 
 MyConnectWS();
-setTimeout(() => { MyConnectWS(); }, 5000)
-setTimeout(() => { MyConnectWS(); }, 7000)
+MyConnectWS();
+closeWebSocket();
+// setTimeout(() => { MyConnectWS(); }, 5000)
+// setTimeout(() => { MyConnectWS(); }, 7000)
 // closeWebSocket();
 // connect();
-setTimeout(() => {
-  closeWebSocket(); }, 10000);
 
-setTimeout(() => {
-  closeWebSocket();
-}, 13000);
+// setTimeout(() => {
+//   closeWebSocket();
+// }, 5000);
 
-setTimeout(()=> { MyConnectWS(); }, 15000);
+// setTimeout(() => { MyConnectWS(); }, 7000)
+// setTimeout(() => { MyConnectWS(); }, 9000)
+// setTimeout(() => {
+//   closeWebSocket();
+// }, 11000);
+
+// setTimeout(()=> { MyConnectWS(); }, 15000);
 
 // connect()
