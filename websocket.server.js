@@ -51,5 +51,5 @@ wsServer.on('request', (request) => {
       let ranNum = Math.floor(Math.random()*1000 + 1);
       connection.sendUTF(`{"name": ${ranNum}}`);
       console.log(`{"name": ${ranNum}}`);
-    }, 1000);
+    }, 4000);
 })
